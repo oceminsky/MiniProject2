@@ -1,5 +1,6 @@
 # MiniProject2
 Olivia - oceminsky
-hello!
+hello! olivia
+the
 
 it's friday!!
