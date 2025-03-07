@@ -1,4 +1,4 @@
 # MiniProject2
-hello! Rachael and Olivia
+hello! Rachael & Olivia
 
 it's friday!!
