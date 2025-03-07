@@ -1,6 +1,10 @@
 # MiniProject2
-Olivia - oceminsky
-hello! olivia
+
+Olivia
+hello! 
 doggie 
+
+hello! Rachael & Olivia
+
 
 it's friday!! 
