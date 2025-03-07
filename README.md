@@ -1,6 +1,6 @@
 # MiniProject2
 Olivia - oceminsky
 hello! olivia
-doggie
+doggie 
 
 it's friday!!
