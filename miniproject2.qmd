@@ -1,0 +1,35 @@
+---
+title: "Mini Project 2"
+format:
+  html: default
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+Sys.setenv(nasa_key = "x3WHrXjNE5AO3wnyLuKV5FFP1IZIltHLh4Qjzln2")
+
+nasa_api_key <- Sys.getenv("nasa_key")
+
+url <- str_c("https://api.nasa.gov/insight_weather/?api_key=", nasa_api_key, "&feedtype=json&ver=1.0")
+
+mars_weather <- GET(url)
+
+mars_weather
+
+
+
+mars_json_list <- mars_weather |> resp_body_json()
+head(resp_json_list, 2)
+resp_json_df <- resp |> resp_body_json(simplifyVector = TRUE)
+head(resp_json_df)
+resp_json_df <- janitor::row_to_names(resp_json_df, 1)
+head(resp_json_df)
+
+details <- content(mars_weather, "parse")
+details
+details$Season
+
+```
+
+
