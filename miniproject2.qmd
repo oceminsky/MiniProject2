@@ -5,6 +5,11 @@ format:
 editor_options: 
   chunk_output_type: console
 ---
+```{r}
+library(tidyverse)
+library(httr)
+```
+
 
 ```{r}
 Sys.setenv(nasa_key = "x3WHrXjNE5AO3wnyLuKV5FFP1IZIltHLh4Qjzln2")
@@ -15,20 +20,13 @@ url <- str_c("https://api.nasa.gov/insight_weather/?api_key=", nasa_api_key, "&f
 
 mars_weather <- GET(url)
 
-mars_weather
+details <- content(mars_weather, "parsed")
+
+details[[1]]
+details[[2]]
 
 
 
-mars_json_list <- mars_weather |> resp_body_json()
-head(resp_json_list, 2)
-resp_json_df <- resp |> resp_body_json(simplifyVector = TRUE)
-head(resp_json_df)
-resp_json_df <- janitor::row_to_names(resp_json_df, 1)
-head(resp_json_df)
-
-details <- content(mars_weather, "parse")
-details
-details$Season
 
 ```
 
