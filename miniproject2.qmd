@@ -9,6 +9,7 @@ editor_options:
 library(tidyverse)
 library(httr)
 library(stringr)
+library(polite)
 ```
 
 
@@ -43,4 +44,32 @@ result <- scrape(session) |>
 result
 ```
 
+```{r}
+acc_stats <- result[[1]]
+be_stats <- result[[6]]
+b10_stats <- result[[9]]
+sec_stats <- result[[23]]
+b12_stats <- result[[4]]
+
+
+acc_stats |>
+  row_to_names(row_number = 1) |>
+  clean_names() |>
+  rename(team = x, conference_wins = w, conference_losses = l, overall_wins = w_2, overall_losses = l_2) |>
+  select(-starts_with("na"))
+
+clean_tibble <- function(stats){
+  stats |>
+  row_to_names(row_number = 1) |>
+  clean_names() |>
+  rename(team = x, conference_wins = w, conference_losses = l, overall_wins = w_2, overall_losses = l_2) |>
+  select(-starts_with("na"))
+}
+
+
+clean_tibble(be_stats)
+clean_tibble(b10_stats)
+clean_tibble(sec_stats)
+clean_tibble(b12_stats)
+```
 
