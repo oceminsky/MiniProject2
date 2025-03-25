@@ -10,6 +10,9 @@ library(tidyverse)
 library(httr)
 library(stringr)
 library(polite)
+library(janitor)
+library(rvest)
+library(ggridges)
 ```
 
 
@@ -85,5 +88,11 @@ ncaa_bb <- acc_tib |>
 
 
 ncaa_bb
+
+
+ncaa_bb |>
+  ggplot(aes(x = pct_2, fill = conference)) +
+  geom_bar() +
+  facet_wrap(~conference)
 ```
 
