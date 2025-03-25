@@ -8,10 +8,12 @@ editor_options:
 ```{r}
 library(tidyverse)
 library(httr)
+library(stringr)
 ```
 
 
 ```{r}
+#set API up in the environment
 Sys.setenv(nasa_key = "x3WHrXjNE5AO3wnyLuKV5FFP1IZIltHLh4Qjzln2")
 
 nasa_api_key <- Sys.getenv("nasa_key")
@@ -23,8 +25,6 @@ mars_weather <- GET(url)
 details <- content(mars_weather, "parsed")
 
 details[[1]]
-details[[2]]
-
 
 
 
