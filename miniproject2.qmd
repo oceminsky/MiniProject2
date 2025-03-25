@@ -67,9 +67,23 @@ clean_tibble <- function(stats){
 }
 
 
-clean_tibble(be_stats)
-clean_tibble(b10_stats)
-clean_tibble(sec_stats)
-clean_tibble(b12_stats)
+acc_tib <- clean_tibble(acc_stats)
+be_tib <- clean_tibble(be_stats)
+b10_tib <- clean_tibble(b10_stats)
+sec_tib <- clean_tibble(sec_stats)
+b12_tib <- clean_tibble(b12_stats)
+
+acc_tib$conference <- "acc"
+be_tib$conference <- "big east"
+b10_tib$conference <- "big 10"
+sec_tib$conference <- "sec"
+b12_tib$conference <- "big 12"
+
+
+ncaa_bb <- acc_tib |>
+  bind_rows(be_tib, b10_tib, sec_tib, b12_tib)
+
+
+ncaa_bb
 ```
 
