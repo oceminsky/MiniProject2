@@ -27,7 +27,20 @@ details <- content(mars_weather, "parsed")
 details[[1]]
 
 
+```
 
+
+
+```{r}
+robotstxt::paths_allowed("https://www.ncaa.com/standings/basketball-men/d1")
+
+session <- bow("https://www.ncaa.com/standings/basketball-men/d1", force = TRUE)
+
+result <- scrape(session) |>
+  html_nodes(css = "table") |>
+  html_table(header = TRUE, fill = TRUE)
+
+result
 ```
 
 
