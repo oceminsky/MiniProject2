@@ -6,40 +6,29 @@ editor_options:
   chunk_output_type: console
 ---
 ```{r}
+#| include: FALSE
+#load libraries
 library(tidyverse)
 library(httr)
 library(stringr)
 library(polite)
 library(janitor)
 library(rvest)
-library(ggridges)
-```
-
-
-```{r}
-#set API up in the environment
-Sys.setenv(nasa_key = "x3WHrXjNE5AO3wnyLuKV5FFP1IZIltHLh4Qjzln2")
-
-nasa_api_key <- Sys.getenv("nasa_key")
-
-url <- str_c("https://api.nasa.gov/insight_weather/?api_key=", nasa_api_key, "&feedtype=json&ver=1.0")
-
-mars_weather <- GET(url)
-
-details <- content(mars_weather, "parsed")
-
-details[[1]]
-
-
 ```
 
 
 
 ```{r}
+#| warning: false
+
+#check permission from provided url
 robotstxt::paths_allowed("https://www.ncaa.com/standings/basketball-men/d1")
 
+
+#begin a session with the url
 session <- bow("https://www.ncaa.com/standings/basketball-men/d1", force = TRUE)
 
+#scrape the contents and convert
 result <- scrape(session) |>
   html_nodes(css = "table") |>
   html_table(header = TRUE, fill = TRUE)
@@ -47,22 +36,27 @@ result <- scrape(session) |>
 result
 ```
 
+
 ```{r}
+#selection of conference
 acc_stats <- result[[1]]
 be_stats <- result[[6]]
 b10_stats <- result[[9]]
 sec_stats <- result[[23]]
-b12_stats <- result[[4]]
 ```
 
+
 ```{r}
+#| warning: FALSE
+
+#ACC tibble
 acc_stats |>
   row_to_names(row_number = 1) |>
   clean_names() |>
   rename(team = x, conference_wins = w, conference_losses = l, conference_pct = pct, overall_wins = w_2, overall_losses = l_2, overall_pct = pct_2) |>
   select(-starts_with("na"))
 
-
+#create a function to clean the data for multiple different conferences
 clean_tibble <- function(conference){
   conference |>
   row_to_names(row_number = 1) |>
@@ -72,39 +66,48 @@ clean_tibble <- function(conference){
 }
 ```
 
+
 ```{r}
+#label tibble by conference
 acc_tib <- clean_tibble(acc_stats)
 be_tib <- clean_tibble(be_stats)
 b10_tib <- clean_tibble(b10_stats)
 sec_tib <- clean_tibble(sec_stats)
-b12_tib <- clean_tibble(b12_stats)
-
-acc_tib$conference <- "acc"
-be_tib$conference <- "big east"
-b10_tib$conference <- "big 10"
-sec_tib$conference <- "sec"
-b12_tib$conference <- "big 12"
 
 
+#rename conference name column
+acc_tib$conference <- "ACC"
+be_tib$conference <- "Big East"
+b10_tib$conference <- "Big Ten"
+sec_tib$conference <- "SEC"
 
+
+
+#combine data
 ncaa_bb <- acc_tib |>
-  bind_rows(be_tib, b10_tib, sec_tib, b12_tib)
+  bind_rows(be_tib, b10_tib, sec_tib)
 
 ncaa_bb
 ```
 
 
 ```{r}
+
+#Graph of Overall and Conference Percentage Evaluation
+
 ncaa_bb |>
-  ggplot(aes(x = overall_wins, y = conference, fill = conference)) +
-  geom_density_ridges()
-
-
-top5 <- ncaa_bb |>
-  slice_max(overall_pct, n = 5)
-
-top_in_conference <- ncaa_bb |>
   group_by(conference) |>
-  slice_max(conference_pct, n = 1)
+  slice_max(order_by = overall_wins, n = 5) |>
+  ungroup() |>
+  ggplot(aes(x = conference_pct, y = overall_pct, color = conference)) +
+  geom_point(size = 3, alpha = 0.9) +
+  geom_text(aes(label = team), hjust = 0.5, vjust = -0.7, size = 3) +
+  labs(title = "Conference vs. Overall Wins Percentage",
+       subtitle = "Fitered by Top 5 Conference Winning Teams", 
+       x = "Conference Percentage",
+       y = "Overall Percentage",
+       color = "Conference",
+       caption = "Table Scraped from (https://www.ncaa.com/standings/basketball-men/d1)")
+  
 ```
 
