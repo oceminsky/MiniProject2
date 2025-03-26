@@ -53,23 +53,26 @@ be_stats <- result[[6]]
 b10_stats <- result[[9]]
 sec_stats <- result[[23]]
 b12_stats <- result[[4]]
+```
 
-
+```{r}
 acc_stats |>
   row_to_names(row_number = 1) |>
   clean_names() |>
-  rename(team = x, conference_wins = w, conference_losses = l, overall_wins = w_2, overall_losses = l_2) |>
+  rename(team = x, conference_wins = w, conference_losses = l, conference_pct = pct, overall_wins = w_2, overall_losses = l_2, overall_pct = pct_2) |>
   select(-starts_with("na"))
 
-clean_tibble <- function(stats){
-  stats |>
+
+clean_tibble <- function(conference){
+  conference |>
   row_to_names(row_number = 1) |>
   clean_names() |>
-  rename(team = x, conference_wins = w, conference_losses = l, overall_wins = w_2, overall_losses = l_2) |>
+  rename(team = x, conference_wins = w, conference_losses = l, conference_pct = pct, overall_wins = w_2, overall_losses = l_2, overall_pct = pct_2) |>
   select(-starts_with("na"))
 }
+```
 
-
+```{r}
 acc_tib <- clean_tibble(acc_stats)
 be_tib <- clean_tibble(be_stats)
 b10_tib <- clean_tibble(b10_stats)
@@ -83,16 +86,25 @@ sec_tib$conference <- "sec"
 b12_tib$conference <- "big 12"
 
 
+
 ncaa_bb <- acc_tib |>
   bind_rows(be_tib, b10_tib, sec_tib, b12_tib)
 
-
 ncaa_bb
+```
 
 
+```{r}
 ncaa_bb |>
-  ggplot(aes(x = pct_2, fill = conference)) +
-  geom_bar() +
-  facet_wrap(~conference)
+  ggplot(aes(x = overall_wins, y = conference, fill = conference)) +
+  geom_density_ridges()
+
+
+top5 <- ncaa_bb |>
+  slice_max(overall_pct, n = 5)
+
+top_in_conference <- ncaa_bb |>
+  group_by(conference) |>
+  slice_max(conference_pct, n = 1)
 ```
 
