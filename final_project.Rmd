@@ -6,6 +6,7 @@ runtime: shiny
 
 ```{r global, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+#load libraries
 library(tidyverse)
 library(stringr)
 library(rvest)
