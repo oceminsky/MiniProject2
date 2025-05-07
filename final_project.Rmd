@@ -21,6 +21,52 @@ library(janitor)
 Introduction
 =================
 
+```{r, echo = FALSE}
+scrape_parks <- function(url) {
+  Sys.sleep(2)
+  session <- bow(url)
+  scrape(session) |>
+    html_nodes("#parklink") |>
+    html_text()
+}
+
+ga_parks <- scrape_parks("https://stateparks.com/ga.html")
+mn_parks <- scrape_parks("https://stateparks.com/mn.html")
+wi_parks <- scrape_parks("https://stateparks.com/wi.html")
+ia_parks <- scrape_parks("https://stateparks.com/ia.html")
+ca_parks <- scrape_parks("https://stateparks.com/ca.html")
+ut_parks <- scrape_parks("https://stateparks.com/ut.html")
+wa_parks <- scrape_parks("https://stateparks.com/wa.html")
+me_parks <- scrape_parks("https://stateparks.com/me.html")
+az_parks <- scrape_parks("https://stateparks.com/az.html")
+sd_parks <- scrape_parks("https://stateparks.com/sd.html")
+
+
+state_tibble <- function(state_name, state_parks) {
+  tib <- as_tibble(state_parks)
+  tib$state <- state_name
+  return(tib)
+}
+
+ga_tib <- state_tibble("Georgia", ga_parks)
+mn_tib <- state_tibble("Minnesota", mn_parks)
+wi_tib <- state_tibble("Wisconsin", wi_parks) 
+ia_tib <- state_tibble("Iowa", ia_parks)
+ca_tib <- state_tibble("California", ca_parks)
+ut_tib <- state_tibble("Utah", ut_parks)
+wa_tib <- state_tibble("Washington", wa_parks)
+me_tib <- state_tibble("Maine", me_parks)
+az_tib <- state_tibble("Arizona", az_parks)
+sd_tib <- state_tibble("South Dakota", sd_parks)
+
+parks <- ga_tib |>
+  bind_rows(mn_tib, wi_tib, ia_tib, ca_tib, ut_tib, wa_tib, me_tib, az_tib, sd_tib)
+
+parks <- parks |>
+  rename(park = value)
+
+```
+
 
 
 
