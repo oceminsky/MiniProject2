@@ -1,5 +1,5 @@
 ---
-title: "Final_Project"
+title: "Final Project"
 output: flexdashboard::flex_dashboard
 runtime: shiny
 ---
@@ -17,6 +17,7 @@ library(viridis)
 library(leaflet)
 library(htmltools)
 library(janitor)
+library(httr)
 ```
 
 Introduction
@@ -31,6 +32,7 @@ scrape_parks <- function(url) {
     html_text()
 }
 
+#scrape the websites
 ga_parks <- scrape_parks("https://stateparks.com/ga.html")
 mn_parks <- scrape_parks("https://stateparks.com/mn.html")
 wi_parks <- scrape_parks("https://stateparks.com/wi.html")
@@ -42,13 +44,14 @@ me_parks <- scrape_parks("https://stateparks.com/me.html")
 az_parks <- scrape_parks("https://stateparks.com/az.html")
 sd_parks <- scrape_parks("https://stateparks.com/sd.html")
 
-
+#tibble creation
 state_tibble <- function(state_name, state_parks) {
   tib <- as_tibble(state_parks)
   tib$state <- state_name
   return(tib)
 }
 
+#labeling
 ga_tib <- state_tibble("Georgia", ga_parks)
 mn_tib <- state_tibble("Minnesota", mn_parks)
 wi_tib <- state_tibble("Wisconsin", wi_parks) 
@@ -60,14 +63,67 @@ me_tib <- state_tibble("Maine", me_parks)
 az_tib <- state_tibble("Arizona", az_parks)
 sd_tib <- state_tibble("South Dakota", sd_parks)
 
+#parks data cleaning
 parks <- ga_tib |>
   bind_rows(mn_tib, wi_tib, ia_tib, ca_tib, ut_tib, wa_tib, me_tib, az_tib, sd_tib)
 
 parks <- parks |>
   rename(park = value)
-
 ```
 
+
+```{r}
+#check URL for permission
+robotstxt::paths_allowed("https://worldpopulationreview.com/state-rankings/air-quality-by-state")
+
+#web scraping session beginning
+session <- bow("https://worldpopulationreview.com/state-rankings/air-quality-by-state", force = TRUE)
+
+#scrape the content, extract and convert
+air_result <- scrape(session) |>
+  html_nodes(css = "table") |>
+  html_table(header = TRUE, fill = TRUE)
+
+air_result
+```
+
+```{r}
+air_quality <- air_result[[1]] |>
+  select(State, `Air Quality Index↓`, `Air Quality Rank (US News 2024)`, `Days with Unhealthy Air Quality (US News 2024)`, `Industrial Toxin Concentration (US News 2024) (pounds/mi²)`) |>
+  rename(state = State,
+         air_quality_index = `Air Quality Index↓`,
+         air_quality_rank = `Air Quality Rank (US News 2024)`,
+         unhealt_days = `Days with Unhealthy Air Quality (US News 2024)`,
+         toxin_concentration = `Industrial Toxin Concentration (US News 2024) (pounds/mi²)`) |>
+  filter(!state %in% c("Alaska", "Hawaii", "District of Columbia"))
+
+air_quality
+```
+
+```{r}
+#check URL for permission
+robotstxt::paths_allowed("https://worldpopulationreview.com/states#most-and-least-populous-states")
+
+#web scraping session beginning
+session <- bow("https://worldpopulationreview.com/states#most-and-least-populous-states", force = TRUE)
+
+#scrape the content, extract and convert
+pop_result <- scrape(session) |>
+  html_nodes(css = "table") |>
+  html_table(header = TRUE, fill = TRUE)
+
+pop_result
+```
+
+```{r}
+#population dataset
+population <- pop_result[[1]] |>
+  select(State, `2025 Pop.  ↓`, Change, Density) |>
+  rename(state = State,
+         population =`2025 Pop.  ↓`,
+         change = Change,
+         density = Density)
+```
 
 
 
