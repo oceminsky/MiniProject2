@@ -4,8 +4,18 @@ output: flexdashboard::flex_dashboard
 runtime: shiny
 ---
 
-```{r setup, include=FALSE}
+```{r global, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(stringr)
+library(rvest)
+library(polite)
+library(sf)
+library(maps)
+library(viridis)
+library(leaflet)
+library(htmltools)
+library(janitor)
 ```
 
 Introduction
