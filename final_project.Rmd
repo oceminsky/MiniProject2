@@ -1,0 +1,49 @@
+---
+title: "Final_Project"
+output: flexdashboard::flex_dashboard
+runtime: shiny
+---
+
+```{r global, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(stringr)
+library(rvest)
+library(polite)
+library(sf)
+library(maps)
+library(viridis)
+library(leaflet)
+library(htmltools)
+library(janitor)
+```
+
+Introduction
+=================
+
+
+
+
+
+
+State Parks
+==================
+
+
+
+
+
+
+
+Air Quality
+=================
+
+
+
+
+
+
+
+Conclusion
+==================
+
