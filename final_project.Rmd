@@ -1,7 +1,6 @@
 ---
 title: "Final_Project"
-output: html_document
-date: "2025-05-07"
+output: flexdashboard::flex_dashboard
 runtime: shiny
 ---
 
@@ -9,6 +8,32 @@ runtime: shiny
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Introduction
+=================
 
 
+
+
+
+
+State Parks
+==================
+
+
+
+
+
+
+
+Air Quality
+=================
+
+
+
+
+
+
+
+Conclusion
+==================
 
