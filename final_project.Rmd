@@ -133,6 +133,63 @@ State Parks
 ==================
 
 
+Row
+---------------------------
+```{r, echo=FALSE}
+inputPanel(
+  selectInput("stateInput", label = "Select State",
+              choices = c("Arizona", "California", "Georgia", "Iowa", "Maine", "Minnesota", "South Dakota", "Utah", "Washington", "Wisconsin"), 
+              selected = "Minnesota"),
+  
+  selectInput("parkInput", label = "Select Type of Park",
+              choices = c("National Park", "National Forest", "State Park", "State Forest", "National Wildlife Refuge"), 
+              selected = "State Park")
+)
+```
+
+
+
+
+Row
+------------------------
+```{r, echo=FALSE}
+
+renderPlot({
+  state_park_types <- parks |>
+  filter(state == input$stateInput) |>
+  mutate(type_park = str_extract(park, "State Forest|State Park|National Park|National Forest|National Wildlife Refuge"),
+         type_park = replace_na(type_park, "Other")) |>
+  count(type_park)
+  ggplot(state_park_types, aes(x = type_park, y = n, fill = type_park)) +
+    geom_bar(stat = "identity") +
+    labs(title = paste("Number of Parks in", input$stateInput),
+         x = "Type of Park",
+         y = "Number of Parks",
+         fill = "Type of Park")
+})
+```
+
+```{r, echo=FALSE}
+
+renderPlot({
+  state_park_types <- parks |>
+  mutate(type_park = str_extract(park, "State Forest|State Park|National Park|National Forest|National Wildlife Refuge"),
+         type_park = replace_na(type_park, "Other")) |>
+  filter(type_park == input$parkInput) |>
+  group_by(state) |>
+  count(type_park)
+  ggplot(state_park_types, aes(x = state, y = n, fill = type_park)) +
+    geom_bar(stat = "identity", fill = "forestgreen", color = "black") +
+    labs(title = paste("Number of", input$parkInput, "in Each State"),
+         x = "State",
+         y = "Number of Parks",
+         fill = "Type of Park")
+  
+})
+
+```
+
+
 
 
 
