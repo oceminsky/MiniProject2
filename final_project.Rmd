@@ -90,12 +90,11 @@ air_result
 ```{r}
 air_quality <- air_result[[1]] |>
   select(State, `Air Quality Index↓`, `Air Quality Rank (US News 2024)`, `Days with Unhealthy Air Quality (US News 2024)`, `Industrial Toxin Concentration (US News 2024) (pounds/mi²)`) |>
-  rename(state = State,
-         air_quality_index = `Air Quality Index↓`,
+  rename(air_quality_index = `Air Quality Index↓`,
          air_quality_rank = `Air Quality Rank (US News 2024)`,
          unhealt_days = `Days with Unhealthy Air Quality (US News 2024)`,
          toxin_concentration = `Industrial Toxin Concentration (US News 2024) (pounds/mi²)`) |>
-  filter(!state %in% c("Alaska", "Hawaii", "District of Columbia"))
+  filter(!State %in% c("Alaska", "Hawaii", "District of Columbia"))
 
 air_quality
 ```
@@ -119,13 +118,10 @@ pop_result
 #population dataset
 population <- pop_result[[1]] |>
   select(State, `2025 Pop.  ↓`, Change, Density) |>
-  rename(state = State,
-         population =`2025 Pop.  ↓`,
+  rename(population =`2025 Pop.  ↓`,
          change = Change,
          density = Density)
 ```
-
-
 
 
 
@@ -191,15 +187,88 @@ renderPlot({
 
 
 
-
-
-
-
 Air Quality
 =================
 
+```{r}
+pop_air <- air_quality |>
+  left_join(population, by = "State")
+```
 
 
+```{r, echo=FALSE}
+inputPanel(
+  selectInput("stateInput", label = "Select State",
+              choices = State, 
+              selected = "Minnesota")
+)
+```
+
+```{r, echo=FALSE}
+
+renderPlot({
+  air_quality_data <- air_quality |>
+  filter(state == input$stateInput) |>
+  mutate(type_park = str_extract(park, "State Forest|State Park|National Park|National Forest|National Wildlife Refuge"),
+         type_park = replace_na(type_park, "Other")) |>
+  count(type_park)
+  ggplot(state_park_types, aes(x = type_park, y = n, fill = type_park)) +
+    geom_bar(stat = "identity") +
+    labs(title = paste("Number of Parks in", input$stateInput),
+         x = "Type of Park",
+         y = "Number of Parks",
+         fill = "Type of Park")
+})
+```
+
+```{r}
+state_sf <- read_sf("https://rstudio.github.io/leaflet/json/us-states.geojson") |>
+  rename(State = name)
+class(state_sf)
+state_sf
+
+
+bins <-  c(35, 40, 45, 50, Inf)
+pal <- colorBin("Greens", domain = state_sf$density, bins = bins)
+
+#Merge the states dataset with the original dataset
+state_air <- right_join(state_sf, air_quality, by ="State")
+
+#Hover labels
+state_air <- state_air |>
+  mutate(State = str_to_title(State)) |>
+  mutate(labels = str_c(State, ": ", round(air_quality_index,2), " AQI (0 = great)"))
+
+labels <- lapply(state_air$labels, HTML)
+
+#creation of interactive plot
+leaflet(state_air) |>
+  setView(-96, 37.8, 3.5) |> #set initial view
+  addTiles() |>
+  addPolygons( #polygons for each state
+    dashArray = "",
+    fillColor = ~colorNumeric("Greens", domain = state_air$air_quality_index)(state_air$air_quality_index),
+    weight = 3,
+    opacity = 2,
+    color = "white",
+    fillOpacity = 0.8,
+    highlightOptions = highlightOptions( #add highlight while hovering
+      weight = 4,
+      color = "666",
+      dashArray = "",
+      fillOpacity = 0.7,
+      bringToFront = TRUE),
+    label = labels,
+    labelOptions = labelOptions( #label appearance
+      style = list("font-weight" = "normal", padding = "3px 8px"),
+      textsize = "15px",
+      direction = "auto")) |>
+  addLegend(pal = pal,
+            values = ~air_quality_index, 
+            opacity = 0.7, 
+            title = NULL, 
+            position = "bottomright")
+```
 
 
 
