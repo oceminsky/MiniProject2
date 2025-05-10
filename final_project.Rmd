@@ -24,6 +24,7 @@ Introduction
 =================
 
 ```{r, echo = FALSE}
+#function for scraping websites
 scrape_parks <- function(url) {
   Sys.sleep(2)
   session <- bow(url)
@@ -44,7 +45,7 @@ me_parks <- scrape_parks("https://stateparks.com/me.html")
 az_parks <- scrape_parks("https://stateparks.com/az.html")
 sd_parks <- scrape_parks("https://stateparks.com/sd.html")
 
-#tibble creation
+#function for tibble creation
 state_tibble <- function(state_name, state_parks) {
   tib <- as_tibble(state_parks)
   tib$state <- state_name
@@ -144,6 +145,20 @@ inputPanel(
 ```
 
 
+```{r, echo = FALSE}
+num_parks <- full_parks |>
+  count(state)
+
+wordcloud(
+  words = num_parks$state, 
+  freq = num_parks$n, 
+  max.words = 50, 
+  random.order = FALSE, 
+  rot.per = 0.35,
+  scale = c(5, 0.25),
+  colors = brewer.pal(6, "Dark2"))
+```
+
 
 
 Row
@@ -158,6 +173,8 @@ renderPlot({
   count(type_park)
   ggplot(state_park_types, aes(x = type_park, y = n, fill = type_park)) +
     geom_bar(stat = "identity") +
+    theme_classic() +
+    scale_fill_viridis(discrete = TRUE, option = "G") +
     labs(title = paste("Number of Parks in", input$stateInput),
          x = "Type of Park",
          y = "Number of Parks",
@@ -176,7 +193,8 @@ renderPlot({
   count(type_park)
   ggplot(state_park_types, aes(x = state, y = n, fill = type_park)) +
     geom_bar(stat = "identity", fill = "forestgreen", color = "black") +
-    labs(title = paste("Number of", input$parkInput, "in Each State"),
+    theme_classic() +
+    labs(title = paste(input$parkInput, "Counts in Each State"),
          x = "State",
          y = "Number of Parks",
          fill = "Type of Park")
@@ -205,7 +223,6 @@ inputPanel(
 ```
 
 ```{r, echo=FALSE}
-
 renderPlot({
   air_quality_data <- air_quality |>
   filter(state == input$stateInput) |>
