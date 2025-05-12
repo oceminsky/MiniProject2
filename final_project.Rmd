@@ -5,7 +5,6 @@ runtime: shiny
 ---
 
 ```{r global, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
 #load libraries
 library(tidyverse)
 library(stringr)
@@ -18,6 +17,7 @@ library(leaflet)
 library(htmltools)
 library(janitor)
 library(httr)
+library(shiny)
 ```
 
 Introduction
@@ -94,7 +94,8 @@ air_quality <- air_result[[1]] |>
          air_quality_rank = `Air Quality Rank (US News 2024)`,
          unhealt_days = `Days with Unhealthy Air Quality (US News 2024)`,
          toxin_concentration = `Industrial Toxin Concentration (US News 2024) (pounds/mi²)`) |>
-  filter(!State %in% c("Alaska", "Hawaii", "District of Columbia"))
+  filter(!State %in% c("Alaska", "Hawaii", "District of Columbia")) |>
+  mutate(toxin_concentration = parse_number(toxin_concentration))
 
 air_quality
 ```
@@ -120,7 +121,9 @@ population <- pop_result[[1]] |>
   select(State, `2025 Pop.  ↓`, Change, Density) |>
   rename(population =`2025 Pop.  ↓`,
          change = Change,
-         density = Density)
+         density = Density) |>
+  mutate(population = parse_number(population),
+         pop_density = parse_number(density))
 ```
 
 
@@ -193,33 +196,76 @@ Air Quality
 ```{r}
 pop_air <- air_quality |>
   left_join(population, by = "State")
+state_sf <- read_sf("https://rstudio.github.io/leaflet/json/us-states.geojson") |>
+  rename(State = name)
+class(state_sf)
+
+state_pop_air <- right_join(state_sf, pop_air , by ="State")
 ```
 
 
 ```{r, echo=FALSE}
-inputPanel(
-  selectInput("stateInput", label = "Select State",
-              choices = State, 
-              selected = "Minnesota")
-)
+ui <- fluidPage(
+  titlePanel("Population and Environmental Impact"),
+  inputPanel(
+  selectInput("impactInput", label = "Select Impact Variable:",
+    choices = c("Toxin Concentration (lbs//mi²)" = "toxin_concentration", #"choice name" = "actual variable name"
+                "Unhealthy Days in 2024" = "unhealt_days",
+                "Population (2025)" = "population",
+                "Population Density" = "pop_density"))),
+  leafletOutput("ourmap"))
 ```
 
-```{r, echo=FALSE}
+```{r}
+bins <- 5
 
-renderPlot({
-  air_quality_data <- air_quality |>
-  filter(state == input$stateInput) |>
-  mutate(type_park = str_extract(park, "State Forest|State Park|National Park|National Forest|National Wildlife Refuge"),
-         type_park = replace_na(type_park, "Other")) |>
-  count(type_park)
-  ggplot(state_park_types, aes(x = type_park, y = n, fill = type_park)) +
-    geom_bar(stat = "identity") +
-    labs(title = paste("Number of Parks in", input$stateInput),
-         x = "Type of Park",
-         y = "Number of Parks",
-         fill = "Type of Park")
-})
+state_sf <- read_sf("https://rstudio.github.io/leaflet/json/us-states.geojson") |> rename(State = name)
+
+server <- function(input, output, session) {
+  state_air_pop <- right_join(state_sf, pop_air, by ="State")
+  
+  output$ourmap <- renderLeaflet({
+    impact_variable <- input$impactInput
+    pal <- colorBin("RdYlBl", domain = state_air_pop[[impact_variable]], bins = bins)
+    colors <- pal(state_air_pop[[impact_variable]])
+    
+    labels <- str_c(state_air_pop$State, "'s ", impact_variable, ": ", round(state_air_pop[[impact_variable]],2))
+    
+    #creation of interactive plot
+leaflet(state_air_pop) |>
+  setView(-96, 37.8, 3.5) |> #set initial view
+  addTiles() |>
+  addPolygons( #polygons for each state
+    dashArray = "",
+    fillColor = ~pal(color),
+    weight = 3,
+    opacity = 2,
+    color = "white",
+    fillOpacity = 0.8,
+    highlightOptions = highlightOptions( #add highlight while hovering
+      weight = 4,
+      color = "666",
+      dashArray = "",
+      fillOpacity = 0.7,
+      bringToFront = TRUE),
+    label = ~lapply(labels, HTML),
+    labelOptions = labelOptions( #label appearance
+      style = list("font-weight" = "normal", padding = "3px 8px"),
+      textsize = "15px",
+      direction = "auto")) |>
+  addLegend(pal = pal,
+            values = state_air_pop[[impact_variable]], 
+            opacity = 0.7, 
+            title = input$impactInput, 
+            position = "bottomright")})
+  }
+
+shinyApp(ui, server)
 ```
+
+
+Conclusion
+==================
 
 ```{r}
 state_sf <- read_sf("https://rstudio.github.io/leaflet/json/us-states.geojson") |>
@@ -227,12 +273,11 @@ state_sf <- read_sf("https://rstudio.github.io/leaflet/json/us-states.geojson") 
 class(state_sf)
 state_sf
 
+state_air <- right_join(state_sf, air_quality, by ="State")
+
 
 bins <-  c(35, 40, 45, 50, Inf)
 pal <- colorBin("Greens", domain = state_sf$density, bins = bins)
-
-#Merge the states dataset with the original dataset
-state_air <- right_join(state_sf, air_quality, by ="State")
 
 #Hover labels
 state_air <- state_air |>
@@ -269,10 +314,3 @@ leaflet(state_air) |>
             title = NULL, 
             position = "bottomright")
 ```
-
-
-
-
-Conclusion
-==================
-
