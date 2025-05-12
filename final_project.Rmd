@@ -169,7 +169,7 @@ inputPanel(
 
 
 ```{r, echo = FALSE}
-num_parks <- parks |>
+num_parks <- full_parks |>
   count(state)
 
 wordcloud(
@@ -236,30 +236,6 @@ pop_air <- air_quality |>
   left_join(population, by = "State")
 ```
 
-
-```{r, echo=FALSE}
-inputPanel(
-  selectInput("stateInput", label = "Select State",
-              choices = State, 
-              selected = "Minnesota")
-)
-```
-
-```{r, echo=FALSE}
-renderPlot({
-  air_quality_data <- air_quality |>
-  filter(state == input$stateInput) |>
-  mutate(type_park = str_extract(park, "State Forest|State Park|National Park|National Forest|National Wildlife Refuge"),
-         type_park = replace_na(type_park, "Other")) |>
-  count(type_park)
-  ggplot(state_park_types, aes(x = type_park, y = n, fill = type_park)) +
-    geom_bar(stat = "identity") +
-    labs(title = paste("Number of Parks in", input$stateInput),
-         x = "Type of Park",
-         y = "Number of Parks",
-         fill = "Type of Park")
-})
-```
 
 ```{r}
 state_sf <- read_sf("https://rstudio.github.io/leaflet/json/us-states.geojson") |>
