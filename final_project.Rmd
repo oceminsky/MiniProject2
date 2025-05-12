@@ -315,10 +315,7 @@ leaflet(state_air) |>
             title = NULL, 
             position = "bottomright")
 ```
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
+
 
 
 State Parks and Air Quality
@@ -383,5 +380,3 @@ parks_pop <- full_parks |>
 Conclusion
 ==================
 
->>>>>>> f392dcfdee55aae27d437c33d338da7fef13f95f
->>>>>>> 807dfeca98e02d303b505b73e74ebdf757526e9e
