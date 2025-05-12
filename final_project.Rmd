@@ -315,3 +315,73 @@ leaflet(state_air) |>
             title = NULL, 
             position = "bottomright")
 ```
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+
+
+State Parks and Air Quality
+===========================
+
+Row
+----------------------
+
+```{r, echo=FALSE}
+inputPanel(
+  selectInput("airquality", label = "Air Quality Variable",
+              choices = c("air_quality_index", "unhealt_days", "toxin_concentration")),
+  
+  selectInput("population", label = "Population Variable",
+              choices = c("population", "density", "change_numeric"))
+)
+
+```
+
+
+Row
+----------------------
+
+```{r, echo=FALSE}
+renderPlot({
+park_air <- full_parks |>
+    group_by(state) |>
+    summarize(num_parks = n()) |>
+    left_join(air_quality) |>
+    mutate(toxin_concentration = parse_number(toxin_concentration))
+  ggplot(park_air, aes(x = num_parks, y = .data[[input$airquality]])) +
+    geom_point(color = "forestgreen") +
+    geom_smooth(method = "lm", se = FALSE) +
+    geom_text(aes(label = state), vjust = -1) +
+    labs(title = paste(input$airquality, "and Number of Parks per State"),
+         x = "Number of Parks",
+         y = input$airquality)
+})
+```
+
+```{r, echo=FALSE}
+renderPlot({
+parks_pop <- full_parks |>
+    group_by(state) |>
+    summarize(num_parks = n()) |>
+    left_join(population, by = state) |>
+    mutate(density = parse_number(density),
+         population = parse_number(population),
+         change_numeric = parse_number(change))
+  ggplot(parks_pop, aes(x = num_parks, y = .data[[input$population]])) +
+    geom_point(color = "forestgreen") +
+    geom_text(aes(label = state), vjust = -1) +
+    geom_smooth(method = "lm", se = FALSE) +
+    labs(title = paste(input$population, "and Number of Parks per State"),
+         x = "Number of Parks",
+         y = input$population)
+})
+```
+
+
+
+Conclusion
+==================
+
+>>>>>>> f392dcfdee55aae27d437c33d338da7fef13f95f
+>>>>>>> 807dfeca98e02d303b505b73e74ebdf757526e9e
