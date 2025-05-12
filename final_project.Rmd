@@ -44,6 +44,16 @@ wa_parks <- scrape_parks("https://stateparks.com/wa.html")
 me_parks <- scrape_parks("https://stateparks.com/me.html")
 az_parks <- scrape_parks("https://stateparks.com/az.html")
 sd_parks <- scrape_parks("https://stateparks.com/sd.html")
+nd_parks <- scrape_parks("https://stateparks.com/nd.html")
+ne_parks <- scrape_parks("https://stateparks.com/ne.html")
+mi_parks <- scrape_parks("https://stateparks.com/mi.html")
+ks_parks <- scrape_parks("https://stateparks.com/ks.html")
+la_parks <- scrape_parks("https://stateparks.com/la.html")
+ms_parks <- scrape_parks("https://stateparks.com/ms.html")
+mo_parks <- scrape_parks("https://stateparks.com/mo.html")
+il_parks <- scrape_parks("https://stateparks.com/il.html")
+co_parks <- scrape_parks("https://stateparks.com/co.html")
+ny_parks <- scrape_parks("https://stateparks.com/ny.html")
 
 #tibble creation
 state_tibble <- function(state_name, state_parks) {
@@ -63,12 +73,25 @@ wa_tib <- state_tibble("Washington", wa_parks)
 me_tib <- state_tibble("Maine", me_parks)
 az_tib <- state_tibble("Arizona", az_parks)
 sd_tib <- state_tibble("South Dakota", sd_parks)
+nd_tib <- state_tibble("North Dakota", nd_parks)
+ne_tib <- state_tibble("Nebraska", ne_parks)
+mi_tib <- state_tibble("Michigan", mi_parks)
+ks_tib <- state_tibble("Kansas", ks_parks)
+la_tib <- state_tibble("Louisiana", la_parks)
+ms_tib <- state_tibble("Mississippi", ms_parks)
+mo_tib <- state_tibble("Missouri", mo_parks)
+il_tib <- state_tibble("Illinois", il_parks)
+co_tib <- state_tibble("Colorado", co_parks)
+ny_tib <- state_tibble("New York", ny_parks)
 
 #parks data cleaning
-parks <- ga_tib |>
-  bind_rows(mn_tib, wi_tib, ia_tib, ca_tib, ut_tib, wa_tib, me_tib, az_tib, sd_tib)
+midwest_parks <- mn_tib |>
+  bind_rows(wi_tib, ia_tib, sd_tib, nd_tib, ne_tib, mo_tib, il_tib, mi_tib, ks_tib) |>
+  rename(park = value)
 
-parks <- parks |>
+
+full_parks <- ga_tib |>
+  bind_rows(mn_tib, wi_tib, ia_tib, ca_tib, ut_tib, wa_tib, me_tib, az_tib, sd_tib, nd_tib, ne_tib, co_tib, il_tib, ks_tib, la_tib, mi_tib, mo_tib, ms_tib, ny_tib) |>
   rename(park = value)
 ```
 
@@ -169,7 +192,7 @@ Row
 ```{r, echo=FALSE}
 
 renderPlot({
-  state_park_types <- parks |>
+  state_park_types <- midwest_parks |>
   filter(state == input$stateInput) |>
   mutate(type_park = str_extract(park, "State Forest|State Park|National Park|National Forest|National Wildlife Refuge"),
          type_park = replace_na(type_park, "Other")) |>
@@ -186,7 +209,7 @@ renderPlot({
 ```{r, echo=FALSE}
 
 renderPlot({
-  state_park_types <- parks |>
+  state_park_types <- midwest_parks |>
   mutate(type_park = str_extract(park, "State Forest|State Park|National Park|National Forest|National Wildlife Refuge"),
          type_park = replace_na(type_park, "Other")) |>
   filter(type_park == input$parkInput) |>
@@ -358,8 +381,7 @@ renderPlot({
 park_air <- full_parks |>
     group_by(state) |>
     summarize(num_parks = n()) |>
-    left_join(air_quality) |>
-    mutate(toxin_concentration = parse_number(toxin_concentration))
+    left_join(air_quality, by = c("state" = "State"))
   ggplot(park_air, aes(x = num_parks, y = .data[[input$airquality]])) +
     geom_point(color = "forestgreen") +
     geom_smooth(method = "lm", se = FALSE) +
@@ -375,10 +397,8 @@ renderPlot({
 parks_pop <- full_parks |>
     group_by(state) |>
     summarize(num_parks = n()) |>
-    left_join(population, by = state) |>
-    mutate(density = parse_number(density),
-         population = parse_number(population),
-         change_numeric = parse_number(change))
+    left_join(population, by = c("state" = "State")) |>
+    mutate(change_numeric = parse_number(change))
   ggplot(parks_pop, aes(x = num_parks, y = .data[[input$population]])) +
     geom_point(color = "forestgreen") +
     geom_text(aes(label = state), vjust = -1) +
