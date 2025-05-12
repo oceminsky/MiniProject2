@@ -148,6 +148,20 @@ inputPanel(
 ```
 
 
+```{r, echo = FALSE}
+num_parks <- full_parks |>
+  count(state)
+
+wordcloud(
+  words = num_parks$state, 
+  freq = num_parks$n, 
+  max.words = 50, 
+  random.order = FALSE, 
+  rot.per = 0.35,
+  scale = c(5, 0.25),
+  colors = brewer.pal(6, "Dark2"))
+```
+
 
 
 Row
