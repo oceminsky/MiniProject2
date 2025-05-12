@@ -330,7 +330,7 @@ renderPlot({
 parks_pop <- full_parks |>
     group_by(state) |>
     summarize(num_parks = n()) |>
-    left_join(population) |>
+    left_join(population, by = state) |>
     mutate(density = parse_number(density),
          population = parse_number(population),
          change_numeric = parse_number(change))
