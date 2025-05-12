@@ -96,7 +96,7 @@ full_parks <- ga_tib |>
 ```
 
 
-```{r}
+```{r, include=FALSE}
 #check URL for permission
 robotstxt::paths_allowed("https://worldpopulationreview.com/state-rankings/air-quality-by-state")
 
@@ -111,7 +111,7 @@ air_result <- scrape(session) |>
 air_result
 ```
 
-```{r}
+```{r, include=FALSE}
 air_quality <- air_result[[1]] |>
   select(State, `Air Quality Index↓`, `Air Quality Rank (US News 2024)`, `Days with Unhealthy Air Quality (US News 2024)`, `Industrial Toxin Concentration (US News 2024) (pounds/mi²)`) |>
   rename(air_quality_index = `Air Quality Index↓`,
@@ -124,7 +124,7 @@ air_quality <- air_result[[1]] |>
 air_quality
 ```
 
-```{r}
+```{r, include=FALSE}
 #check URL for permission
 robotstxt::paths_allowed("https://worldpopulationreview.com/states#most-and-least-populous-states")
 
@@ -139,7 +139,7 @@ pop_result <- scrape(session) |>
 pop_result
 ```
 
-```{r}
+```{r, include=FALSE}
 #population dataset
 population <- pop_result[[1]] |>
   select(State, `2025 Pop.  ↓`, Change, Density) |>
@@ -231,14 +231,12 @@ renderPlot({
 Air Quality
 =================
 
-```{r}
+```{r, echo=FALSE}
 pop_air <- air_quality |>
   left_join(population, by = "State")
 state_sf <- read_sf("https://rstudio.github.io/leaflet/json/us-states.geojson") |>
   rename(State = name)
 class(state_sf)
-
-state_pop_air <- right_join(state_sf, pop_air , by ="State")
 ```
 
 
@@ -254,7 +252,7 @@ ui <- fluidPage(
   leafletOutput("ourmap"))
 ```
 
-```{r}
+```{r, echo=FALSE}
 bins <- 5
 
 state_sf <- read_sf("https://rstudio.github.io/leaflet/json/us-states.geojson") |> rename(State = name)
@@ -265,9 +263,9 @@ server <- function(input, output, session) {
   output$ourmap <- renderLeaflet({
     impact_variable <- input$impactInput
     pal <- colorBin("RdYlBl", domain = state_air_pop[[impact_variable]], bins = bins)
-    colors <- pal(state_air_pop[[impact_variable]])
-    
     labels <- str_c(state_air_pop$State, "'s ", impact_variable, ": ", round(state_air_pop[[impact_variable]],2))
+
+
     
     #creation of interactive plot
 leaflet(state_air_pop) |>
@@ -275,14 +273,14 @@ leaflet(state_air_pop) |>
   addTiles() |>
   addPolygons( #polygons for each state
     dashArray = "",
-    fillColor = ~pal(color),
+    fillColor = ~colorNumeric("Blues", domain = state_air_pop[[impact_variable]])(state_air_pop[[impact_variable]]),
     weight = 3,
-    opacity = 2,
+    opacity = 0.8,
     color = "white",
     fillOpacity = 0.8,
     highlightOptions = highlightOptions( #add highlight while hovering
       weight = 4,
-      color = "666",
+      color = "#666",
       dashArray = "",
       fillOpacity = 0.7,
       bringToFront = TRUE),
@@ -302,10 +300,11 @@ shinyApp(ui, server)
 ```
 
 
+
 Conclusion
 ==================
 
-```{r}
+```{r, echo=FALSE}
 state_sf <- read_sf("https://rstudio.github.io/leaflet/json/us-states.geojson") |>
   rename(State = name)
 class(state_sf)
