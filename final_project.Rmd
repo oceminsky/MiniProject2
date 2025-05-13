@@ -1,5 +1,5 @@
 ---
-title: "Final Project"
+title: "Final Project: State Parks"
 output: flexdashboard::flex_dashboard
 runtime: shiny
 ---
@@ -372,7 +372,8 @@ inputPanel(
               choices = c("Air Quality Index" = "air_quality_index", "Unhealthy Days in 2024" = "unhealt_days", "Toxin Concentration (lbs//mi²)" = "toxin_concentration")), #new names for drop down
   
   selectInput("population", label = "Population Variable",
-              choices = c("Population (2025)" = "population", "Population Density" = "pop_density", "% Change in Population" = "change_numeric")) #new names for drop down
+              choices = c("Population (2025)" = "population", "Population Density" = "pop_density", "% Change in Population" = "change_numeric")), #new names for drop down
+  checkboxInput("check_line", "Include Trend Line?", value = FALSE)
 )
 
 ```
@@ -390,9 +391,17 @@ park_air <- full_parks |>
     left_join(air_quality, by = c("state" = "State")) #join with air quality
 labels <- c("air_quality_index" = "Air Quality Index", "unhealt_days" = "Unhealthy Days in 2024", "toxin_concentration" = "Toxin Concentration (lbs//mi²)") #creating labels for the plot
 selected_label <- labels[input$airquality]
+if(input$check_line)
   ggplot(park_air, aes(x = num_parks, y = .data[[input$airquality]])) +
     geom_point(color = "forestgreen") +
-    geom_smooth(method = "lm", se = FALSE) +
+    geom_smooth(method = "lm", se = FALSE, color = "red") +
+    geom_text_repel(aes(label = state)) + #labeling by state
+    labs(title = paste(selected_label, "and Number of Parks per State"),
+         x = "Number of Parks",
+         y = selected_label)
+else if (!input$check_line)
+  ggplot(park_air, aes(x = num_parks, y = .data[[input$airquality]])) +
+    geom_point(color = "forestgreen") +
     geom_text_repel(aes(label = state)) + #labeling by state
     labs(title = paste(selected_label, "and Number of Parks per State"),
          x = "Number of Parks",
@@ -409,10 +418,18 @@ parks_pop <- full_parks |>
     mutate(change_numeric = parse_number(change))
     labels <- c("population" = "Population (2025)", "pop_density" = "Population Density", "change_numeric" = "% Change in Population") #creating labels for the plot
 selected_label <- labels[input$population]
+if(input$check_line)
   ggplot(parks_pop, aes(x = num_parks, y = .data[[input$population]])) +
     geom_point(color = "forestgreen") +
     geom_text_repel(aes(label = state)) + #labeling by state
-    geom_smooth(method = "lm", se = FALSE) +
+    geom_smooth(method = "lm", se = FALSE, color = "red") +
+    labs(title = paste(selected_label, "and Number of Parks per State"),
+         x = "Number of Parks",
+         y = selected_label)
+else if(!input$check_line)
+  ggplot(parks_pop, aes(x = num_parks, y = .data[[input$population]])) +
+    geom_point(color = "forestgreen") +
+    geom_text_repel(aes(label = state)) + #labeling by state
     labs(title = paste(selected_label, "and Number of Parks per State"),
          x = "Number of Parks",
          y = selected_label)
