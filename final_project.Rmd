@@ -269,7 +269,7 @@ leaflet(state_air) |>
     fillOpacity = 0.8,
     highlightOptions = highlightOptions( #add highlight while hovering
       weight = 4,
-      color = "666",
+      color = "#666",
       dashArray = "",
       fillOpacity = 0.7,
       bringToFront = TRUE),
@@ -319,8 +319,12 @@ server <- function(input, output, session) {
   #what map should render depending on selected variable
   output$ourmap <- renderLeaflet({
     impact_variable <- input$impactInput #variable from dropdown
+    label_text <- ifelse(impact_variable == "toxin_concentration", "Toxin Concentration",
+                         ifelse(impact_variable == "unhealt_days", "Unhealthy Days in 2025",
+                                ifelse(impact_variable == "population", "Population in 2025",
+                                       ifelse(impact_variable == "pop_density", "Population Density", ""))))
     pal <- colorBin("RdYlBl", domain = state_air_pop[[impact_variable]], bins = bins) 
-    labels <- str_c(state_air_pop$State, "'s ", impact_variable, ": ", round(state_air_pop[[impact_variable]],2))
+    labels <- str_c(state_air_pop$State, "'s ", label_text, ": ", round(state_air_pop[[impact_variable]],2))
 
 
     
@@ -337,7 +341,7 @@ leaflet(state_air_pop) |>
     fillOpacity = 0.8,
     highlightOptions = highlightOptions( #add highlight while hovering
       weight = 4,
-      color = "#666",
+      color = "black",
       dashArray = "",
       fillOpacity = 0.7,
       bringToFront = TRUE),
