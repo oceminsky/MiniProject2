@@ -442,7 +442,5 @@ Conclusion
 ==================
 
 
-
-
 Works Cited:
 Cheng, J., Schloerke, B., Karambelkar, B., Xie, Y., & Posit. (n.d.). Using Leaflet with Shiny. RStudio. Retrieved May 12, 2025, from https://rstudio.github.io/leaflet/articles/shiny.html
