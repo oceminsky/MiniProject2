@@ -27,7 +27,7 @@ Introduction
 
 ```{r, echo = FALSE}
 scrape_parks <- function(url) {
-  Sys.sleep(2)
+  Sys.sleep(0.5)
   session <- bow(url)
   scrape(session) |>
     html_nodes("#parklink") |>
@@ -162,7 +162,7 @@ Row
 ```{r, echo=FALSE}
 inputPanel(
   selectInput("stateInput", label = "Select State",
-              choices = c("Arizona", "California", "Georgia", "Iowa", "Maine", "Minnesota", "South Dakota", "Utah", "Washington", "Wisconsin"), 
+              choices = c("Illinois", "Iowa", "Kansas", "Michigan", "Minnesota", "Missouri", "Nebraska", "North Dakota", "South Dakota", "Wisconsin"), 
               selected = "Minnesota"),
   
   selectInput("parkInput", label = "Select Type of Park",
@@ -186,7 +186,7 @@ wordcloud(
   colors = brewer.pal(6, "Dark2"))
 ```
 
-
+In this WordCloud, the size of the words correlates with how many state parks each state has. 
 
 Row
 ------------------------
@@ -200,6 +200,8 @@ renderPlot({
   count(type_park)
   ggplot(state_park_types, aes(x = type_park, y = n, fill = type_park)) +
     geom_bar(stat = "identity") +
+    theme_classic() +
+    scale_fill_viridis(discrete = TRUE, option = "G") +
     labs(title = paste("Number of Parks in", input$stateInput),
          x = "Type of Park",
          y = "Number of Parks",
@@ -218,7 +220,8 @@ renderPlot({
   count(type_park)
   ggplot(state_park_types, aes(x = state, y = n, fill = type_park)) +
     geom_bar(stat = "identity", fill = "forestgreen", color = "black") +
-    labs(title = paste("Number of", input$parkInput, "in Each State"),
+    theme_classic() +
+    labs(title = paste(input$parkInput, "Counts in Each State of the Midwest"),
          x = "State",
          y = "Number of Parks",
          fill = "Type of Park")
@@ -236,7 +239,7 @@ Air Quality
 ```{r, echo=FALSE}
 state_sf <- read_sf("https://rstudio.github.io/leaflet/json/us-states.geojson") |>
   rename(State = name)
-class(state_sf)
+
 
 state_air <- right_join(state_sf, air_quality, by ="State")
 
