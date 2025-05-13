@@ -383,7 +383,7 @@ park_air <- full_parks |>
     group_by(state) |>
     summarize(num_parks = n()) |>
     left_join(air_quality, by = c("state" = "State"))
-labels <- c("Air Quality Index" = "air_quality_index", "Unhealthy Days in 2024" = "unhealt_days", "Toxin Concentration (lbs//mi²)" = "toxin_concentration")
+labels <- c("air_quality_index" = "Air Quality Index", "unhealt_days" = "Unhealthy Days in 2024", "toxin_concentration" = "Toxin Concentration (lbs//mi²)")
 selected_label <- labels[input$airquality]
   ggplot(park_air, aes(x = num_parks, y = .data[[input$airquality]])) +
     geom_point(color = "forestgreen") +
@@ -402,13 +402,15 @@ parks_pop <- full_parks |>
     summarize(num_parks = n()) |>
     left_join(population, by = c("state" = "State")) |>
     mutate(change_numeric = parse_number(change))
+    labels <- c("population" = "Population (2025)", "pop_density" = "Population Density", "change_numeric" = "% Change in Population")
+selected_label <- labels[input$population]
   ggplot(parks_pop, aes(x = num_parks, y = .data[[input$population]])) +
     geom_point(color = "forestgreen") +
     geom_text_repel(aes(label = state)) +
     geom_smooth(method = "lm", se = FALSE) +
-    labs(title = paste(input$population, "and Number of Parks per State"),
+    labs(title = paste(selected_label, "and Number of Parks per State"),
          x = "Number of Parks",
-         y = input$population)
+         y = selected_label)
 })
 ```
 
