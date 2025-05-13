@@ -26,6 +26,7 @@ Introduction
 =================
 
 ```{r, echo = FALSE}
+#function to scrape
 scrape_parks <- function(url) {
   Sys.sleep(0.5)
   session <- bow(url)
@@ -56,7 +57,7 @@ il_parks <- scrape_parks("https://stateparks.com/il.html")
 co_parks <- scrape_parks("https://stateparks.com/co.html")
 ny_parks <- scrape_parks("https://stateparks.com/ny.html")
 
-#tibble creation
+#function for tibble creation
 state_tibble <- function(state_name, state_parks) {
   tib <- as_tibble(state_parks)
   tib$state <- state_name
@@ -163,16 +164,17 @@ Row
 inputPanel(
   selectInput("stateInput", label = "Select State",
               choices = c("Illinois", "Iowa", "Kansas", "Michigan", "Minnesota", "Missouri", "Nebraska", "North Dakota", "South Dakota", "Wisconsin"), 
-              selected = "Minnesota"),
+              selected = "Minnesota"), #state dropdown
   
   selectInput("parkInput", label = "Select Type of Park",
               choices = c("National Park", "National Forest", "State Park", "State Forest", "National Wildlife Refuge"), 
-              selected = "State Park")
+              selected = "State Park") #park types dropdown
 )
 ```
 
 
 ```{r, echo = FALSE}
+#creating wordcloud based on total number of parks
 num_parks <- full_parks |>
   count(state)
 
@@ -186,7 +188,7 @@ wordcloud(
   colors = brewer.pal(6, "Dark2"))
 ```
 
-In this WordCloud, the size of the words correlates with how many state parks each state has. 
+In this Wordcloud, the size of the words correlates with how many state parks each state has. 
 
 Row
 ------------------------
@@ -195,7 +197,7 @@ Row
 renderPlot({
   state_park_types <- midwest_parks |>
   filter(state == input$stateInput) |>
-  mutate(type_park = str_extract(park, "State Forest|State Park|National Park|National Forest|National Wildlife Refuge"),
+  mutate(type_park = str_extract(park, "State Forest|State Park|National Park|National Forest|National Wildlife Refuge"), #separating into different types of parks variable
          type_park = replace_na(type_park, "Other")) |>
   count(type_park)
   ggplot(state_park_types, aes(x = type_park, y = n, fill = type_park)) +
@@ -213,7 +215,7 @@ renderPlot({
 
 renderPlot({
   state_park_types <- midwest_parks |>
-  mutate(type_park = str_extract(park, "State Forest|State Park|National Park|National Forest|National Wildlife Refuge"),
+  mutate(type_park = str_extract(park, "State Forest|State Park|National Park|National Forest|National Wildlife Refuge"), 
          type_park = replace_na(type_park, "Other")) |>
   filter(type_park == input$parkInput) |>
   group_by(state) |>
@@ -358,19 +360,19 @@ shinyApp(ui, server)
 
 
 
-State Parks and Air Quality
+State Parks, Air Quality, and Population
 ===========================
 
-Row
+Inputs {.sidebar}
 ----------------------
 
 ```{r, echo=FALSE}
 inputPanel(
   selectInput("airquality", label = "Air Quality Variable",
-              choices = c("Air Quality Index" = "air_quality_index", "Unhealthy Days in 2024" = "unhealt_days", "Toxin Concentration (lbs//mi²)" = "toxin_concentration")),
+              choices = c("Air Quality Index" = "air_quality_index", "Unhealthy Days in 2024" = "unhealt_days", "Toxin Concentration (lbs//mi²)" = "toxin_concentration")), #new names for drop down
   
   selectInput("population", label = "Population Variable",
-              choices = c("Population (2025)" = "population", "Population Density" = "pop_density", "% Change in Population" = "change_numeric"))
+              choices = c("Population (2025)" = "population", "Population Density" = "pop_density", "% Change in Population" = "change_numeric")) #new names for drop down
 )
 
 ```
@@ -385,13 +387,13 @@ renderPlot({
 park_air <- full_parks |>
     group_by(state) |>
     summarize(num_parks = n()) |>
-    left_join(air_quality, by = c("state" = "State"))
-labels <- c("air_quality_index" = "Air Quality Index", "unhealt_days" = "Unhealthy Days in 2024", "toxin_concentration" = "Toxin Concentration (lbs//mi²)")
+    left_join(air_quality, by = c("state" = "State")) #join with air quality
+labels <- c("air_quality_index" = "Air Quality Index", "unhealt_days" = "Unhealthy Days in 2024", "toxin_concentration" = "Toxin Concentration (lbs//mi²)") #creating labels for the plot
 selected_label <- labels[input$airquality]
   ggplot(park_air, aes(x = num_parks, y = .data[[input$airquality]])) +
     geom_point(color = "forestgreen") +
     geom_smooth(method = "lm", se = FALSE) +
-    geom_text_repel(aes(label = state)) +
+    geom_text_repel(aes(label = state)) + #labeling by state
     labs(title = paste(selected_label, "and Number of Parks per State"),
          x = "Number of Parks",
          y = selected_label)
@@ -403,13 +405,13 @@ renderPlot({
 parks_pop <- full_parks |>
     group_by(state) |>
     summarize(num_parks = n()) |>
-    left_join(population, by = c("state" = "State")) |>
+    left_join(population, by = c("state" = "State")) |> #join with population
     mutate(change_numeric = parse_number(change))
-    labels <- c("population" = "Population (2025)", "pop_density" = "Population Density", "change_numeric" = "% Change in Population")
+    labels <- c("population" = "Population (2025)", "pop_density" = "Population Density", "change_numeric" = "% Change in Population") #creating labels for the plot
 selected_label <- labels[input$population]
   ggplot(parks_pop, aes(x = num_parks, y = .data[[input$population]])) +
     geom_point(color = "forestgreen") +
-    geom_text_repel(aes(label = state)) +
+    geom_text_repel(aes(label = state)) + #labeling by state
     geom_smooth(method = "lm", se = FALSE) +
     labs(title = paste(selected_label, "and Number of Parks per State"),
          x = "Number of Parks",
