@@ -49,7 +49,7 @@ sd_parks <- scrape_parks("https://stateparks.com/sd.html")
 nd_parks <- scrape_parks("https://stateparks.com/nd.html")
 ne_parks <- scrape_parks("https://stateparks.com/ne.html")
 mi_parks <- scrape_parks("https://stateparks.com/mi.html")
-ks_parks <- scrape_parks("https://stateparks.com/ks.html")
+oh_parks <- scrape_parks("https://stateparks.com/oh.html")
 la_parks <- scrape_parks("https://stateparks.com/la.html")
 ms_parks <- scrape_parks("https://stateparks.com/ms.html")
 mo_parks <- scrape_parks("https://stateparks.com/mo.html")
@@ -78,7 +78,7 @@ sd_tib <- state_tibble("South Dakota", sd_parks)
 nd_tib <- state_tibble("North Dakota", nd_parks)
 ne_tib <- state_tibble("Nebraska", ne_parks)
 mi_tib <- state_tibble("Michigan", mi_parks)
-ks_tib <- state_tibble("Kansas", ks_parks)
+oh_tib <- state_tibble("Ohio", oh_parks)
 la_tib <- state_tibble("Louisiana", la_parks)
 ms_tib <- state_tibble("Mississippi", ms_parks)
 mo_tib <- state_tibble("Missouri", mo_parks)
@@ -88,12 +88,12 @@ ny_tib <- state_tibble("New York", ny_parks)
 
 #parks data cleaning
 midwest_parks <- mn_tib |>
-  bind_rows(wi_tib, ia_tib, sd_tib, nd_tib, ne_tib, mo_tib, il_tib, mi_tib, ks_tib) |>
+  bind_rows(wi_tib, ia_tib, sd_tib, nd_tib, ne_tib, mo_tib, il_tib, mi_tib, oh_tib) |>
   rename(park = value)
 
 
 full_parks <- ga_tib |>
-  bind_rows(mn_tib, wi_tib, ia_tib, ca_tib, ut_tib, wa_tib, me_tib, az_tib, sd_tib, nd_tib, ne_tib, co_tib, il_tib, ks_tib, la_tib, mi_tib, mo_tib, ms_tib, ny_tib) |>
+  bind_rows(mn_tib, wi_tib, ia_tib, ca_tib, ut_tib, wa_tib, me_tib, az_tib, sd_tib, nd_tib, ne_tib, co_tib, il_tib, oh_tib, la_tib, mi_tib, mo_tib, ms_tib, ny_tib) |>
   rename(park = value)
 ```
 
@@ -163,7 +163,7 @@ Row
 ```{r, echo=FALSE}
 inputPanel(
   selectInput("stateInput", label = "Select State",
-              choices = c("Illinois", "Iowa", "Kansas", "Michigan", "Minnesota", "Missouri", "Nebraska", "North Dakota", "South Dakota", "Wisconsin"), 
+              choices = c("Illinois", "Iowa", "Michigan", "Minnesota", "Missouri", "Nebraska", "North Dakota", "Ohio", "South Dakota", "Wisconsin"), 
               selected = "Minnesota"), #state dropdown
   
   selectInput("parkInput", label = "Select Type of Park",
