@@ -1,6 +1,8 @@
 ---
 title: "Final Project: State Parks"
-output: flexdashboard::flex_dashboard
+output: 
+  flexdashboard::flex_dashboard:
+    theme: yeti
 runtime: shiny
 ---
 
