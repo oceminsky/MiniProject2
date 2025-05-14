@@ -27,7 +27,7 @@ library(ggrepel)
 Introduction
 =================
 #### Background Information
-In this project, we explore how state park data is related to population and the environment, specifically air quality. We are interested in examining if and how state population and air quality data are connected to the number and types of parks found within each state. We were motivated to engage with this data because of our love of the outdoors and our experiences visiting state and national parks. 
+In this project, we explore how environmental data, specifically air quality, is related to population and state parks. We are interested in examining this relationship and its connection to the number and types of parks found within each state as we investigate broader impacts on air quality. We were motivated to engage with this data because of our love of the outdoors, our experiences visiting state and national parks, and the significance of air quality in connection with climate change and pollution. 
 
 The state parks data for this project comes from the America’s Parks website, and air quality and population data were collected from World Population Review. Air quality and population data are from 2024. The air quality variables used in this project are air quality index (AQI), toxin concentration, and unhealthy days. Population variables include total population, population density, and the percent change in population. 
 
