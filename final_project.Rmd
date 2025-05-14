@@ -24,6 +24,27 @@ library(ggrepel)
 
 Introduction
 =================
+#### Background Information
+In this project, we explore how state park data is related to population and the environment, specifically air quality. We are interested in examining if and how state population and air quality data are connected to the number and types of parks found within each state. We were motivated to engage with this data because of our love of the outdoors and our experiences visiting state and national parks. 
+
+The state parks data for this project comes from the America’s Parks website, and air quality and population data were collected from World Population Review. Air quality and population data are from 2024. The air quality variables used in this project are air quality index (AQI), toxin concentration, and unhealthy days. Population variables include total population, population density, and the percent change in population. 
+
+- AQI is calculated based on the four major air pollutants regulated in the Clean Air Act:          ground-level ozone, carbon monoxide, particle pollution, and sulfur dioxide. AQI ranges from 0    to 500, with 0 indicating very clean air and 500 representing hazardous air. AQI values           falling between 0 to 50 are deemed satisfactory, and values over 50 can cause respiratory         symptoms for sensitive populations. 
+- Toxin concentration refers to air pollutants and toxins released from industrial sources that     can have detrimental effects on air quality and human health. Toxin concentration is measured     in pounds per square mile (pounds/mile2).
+- Unhealthy days signifies the number of days in a year that have unhealthy air quality.
+- Population density represents the number of people per square mile (people/mile2).
+
+
+#### Data Sources:
+
+- [State Parks](https://www.americasparks.com/index.html)
+- [Air Quality](https://worldpopulationreview.com/state-rankings/air-quality-by-state)
+- [Population](https://worldpopulationreview.com/states)
+
+
+#### Github:
+The code for this project is linked [here](https://github.com/oceminsky/MiniProject2).
+
 
 ```{r, echo = FALSE}
 #function to scrape
