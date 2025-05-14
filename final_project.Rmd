@@ -1,5 +1,5 @@
 ---
-title: "Final Project: State Parks"
+title: "Analysis of Environmental Factors: Population, State Parks, and Air Quality"
 output: 
   flexdashboard::flex_dashboard:
     theme: yeti
@@ -468,6 +468,27 @@ else if(!input$check_line)
 Conclusion
 ==================
 
+#### Findings
 
-Works Cited:
+Overall, this project aims to explore the complex relationship between state parks, air quality, and population across the continental United States. Our analysis focused on these three distinct parts to ensure we include the various factors of environmental, conservation, and population factors. Our goal was to uncover trends through various plots that would help give us a broader perspective of the impacts that may contribute to air quality.  
+
+Our analysis uncovered some notable trends regarding state parks, air quality, toxins, and population density across the continental 48 states. California and New York lead the nation in the number of state parks, emphasizing that larger areas with an emphasis on conservation tend to have more parks. In the Midwest, there exists a large distribution with Michigan and Minnesota containing a larger amount of parks compared to the lower numbers from Ohio and Indiana.
+
+In the context of air quality, Utah has the worst air quality with possible causes being related to higher rates of toxin concentration and unhealthy days. On the other hand, Washington stands out as having the best air quality, which may reflect the lower rates of toxin concentration, population parameters, and unhealthy days. There appears to be a slight pattern in air quality index being affected by toxin concentration and unhealthy days, more so than the population parameters. Another note is there appears to be a pattern in regions with the south western part of the country appearing to have worse air quality index rates, this could be due to various other factors such as California's frequent wildfire threats. 
+In the context of population and population density, the most populous states include Califonia, Texas, Florida, and New York. While population density in states like New Jersey, Rhode Island, and Massachusetts are quite high. Population in the context of air quality does not appear to have a significant correlation from a bird’s eye view, however, densely populated states typically face more public health challenges and environmental factors. 
+
+Our comparison revealed a few ideas that may need to be explored further through statistical analysis to see if there are concrete correlations between these hypotheses from the plots seen in this analysis. Specifically, we observed states with larger populations tend to have more state parks. As well as states who have a bad air quality index tend to have higher rates of toxin concentration and unhealthy days. 
+
+In conclusion, our findings reveal relationships between state parks, population, and environmental concerns. Regional factors may have an affect on air quality and state parks. As a result, it is important for policymakers to balance conservation efforts to enhance environmental concerns. Further statistical analysis could provide a clearer understanding of these perceived trends to help guide decisions for the future to inform policymakers as well as the community. 
+
+
+
+#### References:
+
+*Air Quality by State 2025*. Air Quality by state 2025. (2025). https://worldpopulationreview.com/state-rankings/air-quality-by-state 
+
 Cheng, J., Schloerke, B., Karambelkar, B., Xie, Y., & Posit. (n.d.). Using Leaflet with Shiny. RStudio. Retrieved May 12, 2025, from https://rstudio.github.io/leaflet/articles/shiny.html
+
+Walker, T. (2025). *State parks*. America’s Parks: State Parks, National Parks, along with all of the other parks - AmericasParks.com. https://www.americasparks.com/index.html 
+
+*US States - Ranking by Population 2025*. US states - ranking by population 2025. (2025). https://worldpopulationreview.com/states 
